@@ -81,14 +81,16 @@ then
         RELEASE="beta"
         REL_DIR=$SOURCE_DIR"/../Kernel-Release"
         cd $ZIP_DIR
-        echo "Creating package : $KERNEL-$RELEASE-$(date +"%Y%m%d").zip"
-        zip -r -q $KERNEL-$RELEASE-$(date +"%Y%m%d").zip *
+        
+        FILE_NAME=$KERNEL-$RELEASE-$(date +"%Y%m%d-%H%M").zip
+        echo "Creating package : $FILE_NAME"
+        zip -r -q $FILE_NAME *
 
-        if [ -f $ZIP_DIR/$KERNEL-$RELEASE-$(date +"%Y%m%d").zip ]
+        if [ -f $ZIP_DIR/$FILE_NAME ];
         then
-            echo "Package Complete : $KERNEL-$RELEASE-$(date +"%Y%m%d").zip"
+            echo "Package Complete : $FILE_NAME"
             echo "\n- Copying Generated zip to Release folder"
-            cp $KERNEL-$RELEASE-$(date +"%Y%m%d").zip $REL_DIR
+            cp $FILE_NAME $REL_DIR
         else
             echo "$red\nPackage Failed"
         fi
@@ -98,8 +100,8 @@ then
         DIFF=$(($BUILD_END - $BUILD_START))
         echo "Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
     else
-        echo "$red\nError can not create dt.img!"   
+        echo "$red \nError can not create dt.img!"   
     fi
 else
-    echo "$red\n\nCompilation failed! Fix the errors!"
+    echo "$red \n\nCompilation failed! Fix the errors!"
 fi
