@@ -323,7 +323,7 @@ MAKEFLAGS += --include-dir=$(srctree)
 $(srctree)/scripts/Kbuild.include: ;
 include $(srctree)/scripts/Kbuild.include
 
-EXTRA_FLAGS := -Ofast -fgcse-sm -Wno-array-bounds -Wno-error=strict-overflow -fuse-linker-plugin -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves -fprefetch-loop-arrays -fstrict-aliasing -Werror=strict-aliasing
+EXTRA_FLAGS := -Ofast -fgcse-sm -Wno-array-bounds -Wno-error=strict-overflow -fuse-linker-plugin -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves -fprefetch-loop-arrays -fstrict-aliasing -Werror=strict-aliasing -Wno-unused-function
 
 # Make variables (CC, etc...)
 
@@ -383,6 +383,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
+		   -Wno-unused-function \
 		   -fno-delete-null-pointer-checks $(KERNEL_FLAGS)
 KBUILD_AFLAGS_KERNEL := $(KERNEL_FLAGS)
 KBUILD_CFLAGS_KERNEL := $(KERNEL_FLAGS)
