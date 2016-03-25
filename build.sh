@@ -14,13 +14,13 @@
 
 
 #Define Variables
-SOURCE_DIR="/home/akash/Android/redmi2/android_kernel_cyanogen_msm8916-cm-13.0-wt88047"
-ZIP_DIR=$SOURCE_DIR"/../zip"
-ARCH=arm
-SUBARCH=arm
-CROSS_COMPILE='/home/akash/Android/arm-eabi-4.8/bin/arm-eabi-'
-KBUILD_BUILD_USER="akash"
-KBUILD_BUILD_HOST="steins-gate"
+export SOURCE_DIR="/home/akash/Android/redmi2/android_kernel_cyanogen_msm8916-cm-13.0-wt88047"
+export ZIP_DIR=$SOURCE_DIR"/../zip"
+export ARCH=arm
+export SUBARCH=arm
+export CROSS_COMPILE='/home/akash/Android/arm-eabi-4.8/bin/arm-eabi-'
+export KBUILD_BUILD_USER="akash"
+export KBUILD_BUILD_HOST="steins-gate"
 
 COLOR_NC='\e[0m' # No Color
 COLOR_WHITE='\e[0;37m'
@@ -41,7 +41,7 @@ COLOR_GRAY='\e[0;30m'
 COLOR_LIGHT_GRAY='\e[0;37m'
 
 print_msg () {
-    echo -e "$1*******************************************"
+    echo -e "$1\n\n*******************************************"
     echo -e "         $2" 
     echo -e "*******************************************"
 } 
@@ -52,7 +52,7 @@ clean () {
 }
 
 delete_old () {
-    print_msg $COLOR_CYAN "Initialize Defconfig" 
+    print_msg $COLOR_CYAN "Delete old files" 
     
     if [ -f $ZIP_DIR/zImage ];
     then
@@ -79,7 +79,7 @@ build () {
 }
 
 create_flashable () {
-    print_msg $blue "Creating flashable package"
+    print_msg $COLOR_BLUE "Creating flashable package"
     
     echo -e "Creating dt.img from device tree"
 
@@ -118,10 +118,9 @@ create_flashable () {
 }
 
 
-
-if [ "$1" == "clean" ]; then
+if [ "$1" = "clean" ]; then
     clean
-elif ["$1" ==  "make" ]; then
+elif [ "$1" =  "make" ]; then
     build
     if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
     then
@@ -136,7 +135,7 @@ elif ["$1" ==  "make" ]; then
 else
     BUILD_START=$(date +"%s")
     delete_old
-    
+    clean
     build_config
     build
     if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
