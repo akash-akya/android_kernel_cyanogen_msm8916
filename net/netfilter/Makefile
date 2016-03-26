@@ -1,3 +1,4 @@
+CFLAGS_KERNEL := -fno-unsafe-math-optimizations
 CFLAGS_nf_conntrack_core.o := -fno-unsafe-math-optimizations
 CFLAGS_xt_hashlimit.o := -fno-unsafe-math-optimizations
  netfilter-objs := core.o nf_log.o nf_queue.o nf_sockopt.o
