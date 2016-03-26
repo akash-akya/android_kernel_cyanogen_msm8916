@@ -121,6 +121,7 @@ create_flashable () {
 if [ "$1" = "clean" ]; then
     clean
 elif [ "$1" =  "make" ]; then
+    BUILD_START=$(date +"%s")
     build
     if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
     then
