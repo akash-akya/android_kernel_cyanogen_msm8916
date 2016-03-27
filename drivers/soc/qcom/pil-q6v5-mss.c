@@ -253,6 +253,15 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 	struct property *prop;
 	int ret;
 
+    int clk_ready = of_get_named_gpio(pdev->dev.of_node,
+            "qcom,gpio-proxy-unvote", 0);
+    if (clk_ready < 0)
+        return clk_ready;
+
+    clk_ready = gpio_to_irq(clk_ready);
+    if (clk_ready < 0)
+        return clk_ready;
+
 	q6 = pil_q6v5_init(pdev);
 	if (IS_ERR(q6))
 		return PTR_ERR(q6);
@@ -262,6 +271,7 @@ static int pil_mss_loadable_init(struct modem_data *drv,
 	q6_desc = &q6->desc;
 	q6_desc->owner = THIS_MODULE;
 	q6_desc->proxy_timeout = PROXY_TIMEOUT_MS;
+    q6_desc->proxy_unvote_irq = clk_ready;
 
 	q6_desc->ops = &pil_msa_mss_ops;
 

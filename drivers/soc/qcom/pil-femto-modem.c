@@ -626,6 +626,7 @@ static int pil_femto_modem_desc_probe(struct platform_device *pdev)
 	mba_desc->flags = skip_entry ? PIL_SKIP_ENTRY_CHECK : 0;
 	mba_desc->map_fw_mem = pil_femto_modem_map_fw_mem;
 	mba_desc->unmap_fw_mem = pil_femto_modem_unmap_fw_mem;
+    mba_desc->proxy_unvote_irq = clk_ready;
 
 	ret = pil_desc_init(mba_desc);
 	if (ret)
