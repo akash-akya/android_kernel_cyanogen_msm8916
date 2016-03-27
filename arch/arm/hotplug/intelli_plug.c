@@ -61,7 +61,7 @@ module_param(touch_boost_active, uint, 0664);
 static unsigned int nr_run_profile_sel = 0;
 module_param(nr_run_profile_sel, uint, 0664);
 
-static unsigned int min_online_cpus = 2;
+static unsigned int min_online_cpus = 1;
 module_param(min_online_cpus, uint, 0664);
 
 //default to something sane rather than zero
