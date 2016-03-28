@@ -1383,23 +1383,6 @@ static inline unsigned int do_avg_nr_running(struct rq *rq)
 #define NR_AVE_PERIOD		(1 << NR_AVE_PERIOD_EXP)
 #define NR_AVE_DIV_PERIOD(x)	((x) >> NR_AVE_PERIOD_EXP)
 
-static inline unsigned int do_avg_nr_running(struct rq *rq)
-{
-	s64 nr, deltax;
-	unsigned int ave_nr_running = rq->ave_nr_running;
-
-	deltax = rq->clock_task - rq->nr_last_stamp;
-	nr = NR_AVE_SCALE(rq->nr_running);
-
-	if (deltax > NR_AVE_PERIOD)
-		ave_nr_running = nr;
-	else
-		ave_nr_running +=
-			NR_AVE_DIV_PERIOD(deltax * (nr - ave_nr_running));
-
-	return ave_nr_running;
-}
-
 static inline void inc_nr_running(struct rq *rq)
 {
 #ifdef CONFIG_INTELLI_PLUG
@@ -1435,9 +1418,9 @@ static inline void dec_nr_running(struct rq *rq)
 #endif
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, false);
 #ifdef CONFIG_INTELLI_PLUG
-write_seqcount_begin(&nr_stats->ave_seqcnt);
-nr_stats->ave_nr_running = do_avg_nr_running(rq);
-nr_stats->nr_last_stamp = rq->clock_task;
+	write_seqcount_begin(&nr_stats->ave_seqcnt);
+	nr_stats->ave_nr_running = do_avg_nr_running(rq);
+	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
 	rq->nr_running--;
 #ifdef CONFIG_INTELLI_PLUG

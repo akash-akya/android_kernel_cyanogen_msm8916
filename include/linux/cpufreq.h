@@ -73,6 +73,7 @@ struct cpufreq_policy {
 	unsigned int		max;    /* in kHz */
 	unsigned int		cur;    /* in kHz, only needed if cpufreq
 					 * governors are used */
+	unsigned int            util;  /* CPU utilization at max frequency */
 	unsigned int		policy; /* see above */
 	struct cpufreq_governor	*governor; /* see below */
 	void			*governor_data;
@@ -135,6 +136,7 @@ void cpufreq_sysfs_remove_file(const struct attribute *attr);
 unsigned int cpufreq_get(unsigned int cpu);
 unsigned int cpufreq_quick_get(unsigned int cpu);
 unsigned int cpufreq_quick_get_max(unsigned int cpu);
+unsigned int cpufreq_quick_get_util(unsigned int cpu);
 void disable_cpufreq(void);
 
 u64 get_cpu_idle_time(unsigned int cpu, u64 *wall, int io_busy);
@@ -164,6 +166,7 @@ static inline void disable_cpufreq(void) { }
 
 #define CPUFREQ_RELATION_L 0  /* lowest frequency at or above target */
 #define CPUFREQ_RELATION_H 1  /* highest frequency below or at target */
+#define CPUFREQ_RELATION_C 2  /* closest frequency to target */
 
 struct freq_attr {
 	struct attribute attr;
@@ -218,6 +221,10 @@ struct cpufreq_driver {
 
 	/* should be defined, if possible */
 	unsigned int	(*get)	(unsigned int cpu);
+
+	/* optional */
+	unsigned int (*getavg)	(struct cpufreq_policy *policy,
+				unsigned int cpu);
 
 	/* optional */
 	int	(*bios_limit)	(int cpu, unsigned int *limit);
@@ -313,6 +320,10 @@ int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list);
 
 void cpufreq_notify_transition(struct cpufreq_policy *policy,
 		struct cpufreq_freqs *freqs, unsigned int state);
+
+void cpufreq_notify_utilization(struct cpufreq_policy *policy,
+		unsigned int load);
+
 /*
  * Governor specific info that can be passed to modules that subscribe
  * to CPUFREQ_GOVINFO_NOTIFIER
@@ -404,6 +415,8 @@ int cpufreq_driver_target(struct cpufreq_policy *policy,
 int __cpufreq_driver_target(struct cpufreq_policy *policy,
 				   unsigned int target_freq,
 				   unsigned int relation);
+extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
+					unsigned int cpu);
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
@@ -439,10 +452,10 @@ extern struct cpufreq_governor cpufreq_gov_interactive;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_CAFACTIVE)
 extern struct cpufreq_governor cpufreq_gov_cafactive;
 #define CPUFREQ_DEFAULT_GOVERNOR  (&cpufreq_gov_cafactive)
-#endif
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE)
 extern struct cpufreq_governor cpufreq_gov_intelliactive;
 #define CPUFREQ_DEFAULT_GOVERNOR    (&cpufreq_gov_intelliactive)
+#endif
 
 /*********************************************************************
  *                     FREQUENCY TABLE HELPERS                       *
