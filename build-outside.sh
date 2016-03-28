@@ -63,10 +63,10 @@ delete_old () {
         rm -f $ZIP_DIR/dt.img
         rm -f $ZIP_DIR/*.zip
     fi
-    if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
+    if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
     then
-        rm $SOURCE_DIR/arch/arm/boot/zImage
-        rm $SOURCE_DIR/arch/arm/boot/dt.img
+        rm -f $BUILD_DIR/arch/arm/boot/zImage
+        rm -f $BUILD_DIR/arch/arm/boot/dt.img
     fi
 }
 
@@ -123,25 +123,31 @@ create_flashable () {
 
 if [ "$1" = "clean" ]; then
     clean
-elif [ "$1" =  "make" ]; then
-    BUILD_START=$(date +"%s")
-    build
-    if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
-    then
-        echo -e "Build complete."
-        create_flashable
-        BUILD_END=$(date +"%s")
-        DIFF=$(($BUILD_END - $BUILD_START))
-        echo -e "Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-    else
-        echo -e "$COLOR_RED \n\nCompilation failed! Fix the errors!"
-    fi
+# elif [ "$1" =  "make" ]; then
+#     BUILD_START=$(date +"%s")
+#     delete_old
+#     build
+#     if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
+#     then
+#         echo -e "Build complete."
+#         create_flashable
+#         BUILD_END=$(date +"%s")
+#         DIFF=$(($BUILD_END - $BUILD_START))
+#         echo -e "Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+#     else
+#         echo -e "$COLOR_RED \n\nCompilation failed! Fix the errors!"
+#     fi
 else
     BUILD_START=$(date +"%s")
     delete_old
-    clean
+
+    if [ "$1" != "make" ]; then
+        clean
+    fi
+    
     build_config
     build
+
     if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
     then
         echo -e "Build complete."
