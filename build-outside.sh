@@ -21,7 +21,7 @@ export SUBARCH=arm
 export CROSS_COMPILE='/home/akash/Android/arm-eabi-4.8/bin/arm-eabi-'
 export KBUILD_BUILD_USER="akash"
 export KBUILD_BUILD_HOST="steins-gate"
-export makeo="make O=/home/akash/Android/redmi2/kernel-out"
+export MAKEO="make O=/home/akash/Android/redmi2/kernel-out"
 
 
 COLOR_NC='\e[0m' # No Color
@@ -50,7 +50,7 @@ print_msg () {
 
 clean () {
     print_msg $COLOR_YELLOW "Cleaning the build" 
-    makeo clean && makeo mrproper
+    $MAKEO clean && $MAKEO mrproper
 }
 
 delete_old () {
@@ -71,13 +71,13 @@ delete_old () {
 
 build_config () {
     print_msg $COLOR_CYAN "Initialize Defconfig" 
-    makeo microfire_defconfig   
+    $MAKEO microfire_defconfig   
 }
 
 
 build () {
     print_msg $COLOR_YELLOW "Building Kernel"
-    makeo -j5
+    $MAKEO -j5
 }
 
 create_flashable () {
