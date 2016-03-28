@@ -15,6 +15,7 @@
 
 #Define Variables
 export SOURCE_DIR="/home/akash/Android/redmi2/android_kernel_cyanogen_msm8916-cm-13.0-wt88047"
+export BUILD_DIR="/home/akash/Android/redmi2/kernel-out"
 export ZIP_DIR=$SOURCE_DIR"/../zip"
 export ARCH=arm
 export SUBARCH=arm
@@ -85,20 +86,20 @@ create_flashable () {
     
     echo -e "Creating dt.img from device tree"
 
-    KPATH=$SOURCE_DIR"/arch/arm/boot"
-    dtbToolCM -2 -o $KPATH"/dt.img" -s 2048 -p $SOURCE_DIR"/scripts/dtc/" $KPATH"/dts/" > /dev/null
+    KPATH=$BUILD_DIR"/arch/arm/boot"
+    dtbToolCM -2 -o $KPATH"/dt.img" -s 2048 -p $BUILD_DIR"/scripts/dtc/" $KPATH"/dts/" > /dev/null
 
-    if [ -f $SOURCE_DIR/arch/arm/boot/dt.img ];
+    if [ -f $BUILD_DIR/arch/arm/boot/dt.img ];
         then
             echo -e "Copying kernel and device tree"
-            cp $SOURCE_DIR/arch/arm/boot/zImage $ZIP_DIR
-            cp $SOURCE_DIR/arch/arm/boot/dt.img $ZIP_DIR
+            cp $BUILD_DIR/arch/arm/boot/zImage $ZIP_DIR
+            cp $BUILD_DIR/arch/arm/boot/dt.img $ZIP_DIR
 
             echo -e "\n- Compressing Kernel zip"
 
             KERNEL="microfire"
             RELEASE="beta"
-            REL_DIR=$SOURCE_DIR"/../Kernel-Release"
+            REL_DIR=$BUILD_DIR"/../Kernel-Release"
             cd $ZIP_DIR
             
             FILE_NAME=$KERNEL-$RELEASE-$(date +"%Y%m%d-%H%M").zip
@@ -113,7 +114,7 @@ create_flashable () {
             else
                 echo -e "$COLOR_RED\nPackage Failed"
             fi
-            cd $SOURCE_DIR            
+            cd $BUILD_DIR            
         else
             echo -e "$COLOR_RED \nError can not create dt.img!"   
         fi
@@ -125,7 +126,7 @@ if [ "$1" = "clean" ]; then
 elif [ "$1" =  "make" ]; then
     BUILD_START=$(date +"%s")
     build
-    if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
+    if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
     then
         echo -e "Build complete."
         create_flashable
@@ -141,7 +142,7 @@ else
     clean
     build_config
     build
-    if [ -f $SOURCE_DIR/arch/arm/boot/zImage ];
+    if [ -f $BUILD_DIR/arch/arm/boot/zImage ];
     then
         echo -e "Build complete."
         create_flashable
