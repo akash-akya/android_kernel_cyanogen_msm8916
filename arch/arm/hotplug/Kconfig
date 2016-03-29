@@ -11,4 +11,11 @@ config MSM_HOTPLUG
     help
       The MSM hotplug driver controls on-/offlining of additional cores based
       on current cpu load.
+
+config ALUCARD_HOTPLUG
+    bool "Enable alucard-hotplug cpu hotplug driver"
+    depends on HOTPLUG_CPU
+    default y
+    help
+      Alucard-hotplug cpu hotplug driver by alucard24
   
