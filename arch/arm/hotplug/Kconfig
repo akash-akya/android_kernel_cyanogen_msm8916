@@ -7,7 +7,7 @@ config INTELLI_PLUG
 config MSM_HOTPLUG
     bool "MSM hotplug driver"
     depends on HOTPLUG_CPU
-    default y
+    default n
     help
       The MSM hotplug driver controls on-/offlining of additional cores based
       on current cpu load.
@@ -15,14 +15,14 @@ config MSM_HOTPLUG
 config ALUCARD_HOTPLUG
     bool "Enable alucard-hotplug cpu hotplug driver"
     depends on HOTPLUG_CPU
-    default y
+    default n
     help
       Alucard-hotplug cpu hotplug driver by alucard24
 
 config BRICKED_HOTPLUG
     bool "Enable kernel based mpdecision"
     depends on MSM_RUN_QUEUE_STATS
-    default y
+    default n
     help
       This enables kernel based multi core control.
       (up/down hotplug based on load)
