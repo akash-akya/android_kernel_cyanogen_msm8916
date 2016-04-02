@@ -241,8 +241,8 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = gcc
 HOSTCXX      = g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -Ofast -fomit-frame-pointer -fgcse-las
-HOSTCXXFLAGS = -Ofast -fgcse-las -DNDEBUG -pipe 
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu89
+HOSTCXXFLAGS = -O2
   
 
 # Decide whether to build built-in, modular, or both.
@@ -323,20 +323,20 @@ MAKEFLAGS += --include-dir=$(srctree)
 $(srctree)/scripts/Kbuild.include: ;
 include $(srctree)/scripts/Kbuild.include
 
-EXTRA_FLAGS := -Ofast -fgcse-sm -Wno-array-bounds -Wno-error=strict-overflow -fuse-linker-plugin -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves -fprefetch-loop-arrays -fstrict-aliasing -Werror=strict-aliasing -Wno-unused-function
+# EXTRA_FLAGS := -Ofast -fgcse-sm -Wno-array-bounds -Wno-error=strict-overflow -fuse-linker-plugin -pipe -DNDEBUG -fmodulo-sched -fmodulo-sched-allow-regmoves -fprefetch-loop-arrays -fstrict-aliasing -Werror=strict-aliasing -Wno-unused-function
 
 # Make variables (CC, etc...)
 
-AS		= $(CROSS_COMPILE)as
-LD		= $(CROSS_COMPILE)ld
+AS			= $(CROSS_COMPILE)as
+LD			= $(CROSS_COMPILE)ld
 REAL_CC		= $(CROSS_COMPILE)gcc
-CPP		= $(CC) -E
-AR		= $(CROSS_COMPILE)ar
-NM		= $(CROSS_COMPILE)nm
+CPP			= $(CC) -E
+AR			= $(CROSS_COMPILE)ar
+NM			= $(CROSS_COMPILE)nm
 STRIP		= $(CROSS_COMPILE)strip
 OBJCOPY		= $(CROSS_COMPILE)objcopy
 OBJDUMP		= $(CROSS_COMPILE)objdump
-AWK		= awk
+AWK			= awk
 GENKSYMS	= scripts/genksyms/genksyms
 INSTALLKERNEL  := installkernel
 DEPMOD		= /sbin/depmod
@@ -347,50 +347,51 @@ CHECK		= sparse
 # warnings and causes the build to stop upon encountering them.
 CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
-CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
-		  -Wbitwise -Wno-return-void $(CF)
-KERNEL_FLAGS	= -pipe -DNDEBUG -Ofast
-MOD_FLAGS 	= -DMODULE $(KERNELFLAGS)
-CFLAGS_MODULE   = -DMODULE
-AFLAGS_MODULE   = -DMODULE
+CHECKFLAGS     	:= 	-D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
+		  			-Wbitwise -Wno-return-void $(CF)
+CFLAGS_MODULE   =
+AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	= $(KERNEL_FLAGS)
-AFLAGS_KERNEL	= $(KERNEL_FLAGS)
-CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
+CFLAGS_KERNEL	=
+AFLAGS_KERNEL	=
+CFLAGS_GCOV		= -fprofile-arcs -ftest-coverage
 
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
-		-I$(srctree)/arch/$(hdr-arch)/include/uapi \
-		-Iarch/$(hdr-arch)/include/generated/uapi \
-		-I$(srctree)/drivers/soc/qcom \
-		-I$(srctree)/include/uapi \
-		-Iinclude/generated/uapi \
+				-I$(srctree)/arch/$(hdr-arch)/include/uapi \
+				-Iarch/$(hdr-arch)/include/generated/uapi \
+				-I$(srctree)/drivers/soc/qcom \
+				-I$(srctree)/include/uapi \
+				-Iinclude/generated/uapi \
                 -include $(srctree)/include/linux/kconfig.h
 
 # Use LINUXINCLUDE when you must reference the include/ directory.
 # Needed to be compatible with the O= option
 LINUXINCLUDE    := \
-		-I$(srctree)/arch/$(hdr-arch)/include \
-		-Iarch/$(hdr-arch)/include/generated \
-		$(if $(KBUILD_SRC), -I$(srctree)/include) \
-		-Iinclude \
-		$(USERINCLUDE)
+				-I$(srctree)/arch/$(hdr-arch)/include \
+				-Iarch/$(hdr-arch)/include/generated \
+				$(if $(KBUILD_SRC), -I$(srctree)/include) \
+				-Iinclude \
+				$(USERINCLUDE)
 
 KBUILD_CPPFLAGS := -D__KERNEL__
 
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
-		   -Wno-unused-function \
-		   -fno-delete-null-pointer-checks $(KERNEL_FLAGS)
-KBUILD_AFLAGS_KERNEL := $(KERNEL_FLAGS)
-KBUILD_CFLAGS_KERNEL := $(KERNEL_FLAGS)
-KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_AFLAGS_MODULE  := $(MOD_FLAGS)
-KBUILD_CFLAGS_MODULE  := $(MOD_FLAGS)
-KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
+
+KBUILD_CFLAGS   := 	-Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+					-fno-strict-aliasing -fno-common \
+					-Werror-implicit-function-declaration \
+					-Wno-format-security \
+					-fno-delete-null-pointer-checks \
+					$(call cc-option,-Wno-unused-const-variable,) \
+					-std=gnu89
+
+KBUILD_AFLAGS_KERNEL 	:=
+KBUILD_CFLAGS_KERNEL 	:=
+KBUILD_AFLAGS   		:= -D__ASSEMBLY__
+KBUILD_AFLAGS_MODULE  	:= -DMODULE
+KBUILD_CFLAGS_MODULE  	:= -DMODULE
+KBUILD_LDFLAGS_MODULE 	:= -T $(srctree)/scripts/module-common.lds
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
@@ -417,9 +418,9 @@ export MODVERDIR := $(if $(KBUILD_EXTMOD),$(firstword $(KBUILD_EXTMOD))/).tmp_ve
 # Files to ignore in find ... statements
 
 RCS_FIND_IGNORE := \( -name SCCS -o -name BitKeeper -o -name .svn -o -name CVS \
-		   -o -name .pc -o -name .hg -o -name .git \) -prune -o
+		   			-o -name .pc -o -name .hg -o -name .git \) -prune -o
 export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn \
-			 --exclude CVS --exclude .pc --exclude .hg --exclude .git
+			 			 --exclude CVS --exclude .pc --exclude .hg --exclude .git
 
 # ===========================================================================
 # Rules shared between *config targets and build targets
@@ -463,9 +464,9 @@ asm-generic:
 version_h := include/generated/uapi/linux/version.h
 
 no-dot-config-targets := clean mrproper distclean \
-			 cscope gtags TAGS tags help %docs check% coccicheck \
-			 $(version_h) headers_% archheaders archscripts \
-			 kernelversion %src-pkg
+						 cscope gtags TAGS tags help %docs check% coccicheck \
+						 $(version_h) headers_% archheaders archscripts \
+						 kernelversion %src-pkg
 
 config-targets := 0
 mixed-targets  := 0
@@ -584,7 +585,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS	+= -Ofast $(call cc-disable-warning,maybe-uninitialized,)
+KBUILD_CFLAGS	+= -O3
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -648,7 +649,7 @@ endif
 
 ifdef CONFIG_DEBUG_INFO_REDUCED
 KBUILD_CFLAGS 	+= $(call cc-option, -femit-struct-debug-baseonly) \
-		   $(call cc-option,-fno-var-tracking)
+		   		   $(call cc-option,-fno-var-tracking)
 endif
 
 ifdef CONFIG_FUNCTION_TRACER

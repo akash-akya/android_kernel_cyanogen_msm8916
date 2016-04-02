@@ -18,7 +18,7 @@ export SOURCE_DIR="/home/akash/Android/redmi2/android_kernel_cyanogen_msm8916-cm
 export ZIP_DIR=$SOURCE_DIR"/../zip"
 export ARCH=arm
 export SUBARCH=arm
-export CROSS_COMPILE='/home/akash/Android/arm-eabi-4.8/bin/arm-eabi-'
+export CROSS_COMPILE='/home/akash/Android/arm-eabi-5.1/bin/arm-eabi-'
 export KBUILD_BUILD_USER="akash"
 export KBUILD_BUILD_HOST="steins-gate"
 

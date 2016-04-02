@@ -500,7 +500,7 @@ static int smb135x_masked_write(struct smb135x_chg *chip, int reg,
 						u8 mask, u8 val)
 {
 	s32 rc;
-	u8 temp;
+	u8 temp = 0;
 
 	if (chip->skip_writes || chip->skip_reads)
 		return 0;
@@ -526,7 +526,7 @@ out:
 static int read_revision(struct smb135x_chg *chip, u8 *revision)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, STATUS_9_REG, &reg);
 	if (rc < 0) {
@@ -540,7 +540,7 @@ static int read_revision(struct smb135x_chg *chip, u8 *revision)
 static int read_version1(struct smb135x_chg *chip, u8 *version)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, VERSION1_REG, &reg);
 	if (rc < 0) {
@@ -554,7 +554,7 @@ static int read_version1(struct smb135x_chg *chip, u8 *version)
 static int read_version2(struct smb135x_chg *chip, u8 *version)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, VERSION2_REG, &reg);
 	if (rc < 0) {
@@ -568,7 +568,7 @@ static int read_version2(struct smb135x_chg *chip, u8 *version)
 static int read_version3(struct smb135x_chg *chip, u8 *version)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, VERSION3_REG, &reg);
 	if (rc < 0) {
@@ -584,7 +584,7 @@ static int read_version3(struct smb135x_chg *chip, u8 *version)
 static bool is_usb100_broken(struct smb135x_chg *chip)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, TRIM_23_REG, &reg);
 	if (rc < 0) {
@@ -597,7 +597,7 @@ static bool is_usb100_broken(struct smb135x_chg *chip)
 static bool is_usb_slave_present(struct smb135x_chg *chip)
 {
 	bool usb_slave_present;
-	u8 reg;
+	u8 reg = 0;
 	int rc;
 
 	rc = smb135x_read(chip, STATUS_6_REG, &reg);
@@ -705,7 +705,7 @@ out:
 static int smb135x_get_prop_batt_present(struct smb135x_chg *chip)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	rc = smb135x_read(chip, STATUS_4_REG, &reg);
 	if (rc < 0)
@@ -721,7 +721,7 @@ static int smb135x_get_prop_batt_present(struct smb135x_chg *chip)
 static int smb135x_get_prop_charge_type(struct smb135x_chg *chip)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 	u8 chg_type;
 
 	rc = smb135x_read(chip, STATUS_4_REG, &reg);
@@ -1064,7 +1064,7 @@ static int smb135x_get_usb_chg_current(struct smb135x_chg *chip)
 #define CFG_1C_REG			0x1C
 static int smb135x_get_fastchg_current(struct smb135x_chg *chip)
 {
-	u8 reg;
+	u8 reg = 0;
 	int rc;
 
 	rc = smb135x_read(chip, CFG_1C_REG, &reg);
@@ -1086,7 +1086,7 @@ static int smb135x_set_fastchg_current(struct smb135x_chg *chip,
 							int current_ma)
 {
 	int i, rc, diff, best, best_diff;
-	u8 reg;
+	u8 reg = 0;
 
 	/*
 	 * if there is no array loaded or if the smallest current limit is
@@ -1641,7 +1641,7 @@ static int smb135x_dc_get_property(struct power_supply *psy,
 #define VHIGH_RANGE_FLOAT_STEP_MV	20
 static int smb135x_float_voltage_set(struct smb135x_chg *chip, int vfloat_mv)
 {
-	u8 temp;
+	u8 temp = 0;
 
 	if ((vfloat_mv < MIN_FLOAT_MV) || (vfloat_mv > MAX_FLOAT_MV)) {
 		dev_err(chip->dev, "bad float voltage mv =%d asked to set\n",
@@ -1673,7 +1673,7 @@ static int smb135x_set_resume_threshold(struct smb135x_chg *chip,
 		int resume_delta_mv)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	if (!chip->inhibit_disabled) {
 		if (resume_delta_mv < 100)
@@ -2010,7 +2010,7 @@ static int smb135x_chg_otg_enable(struct smb135x_chg *chip)
 	int rc = 0;
 	int restart_count = 0;
 	struct timeval time_a, time_b, time_c, time_d;
-	u8 reg;
+	u8 reg = 0;
 
 	if (chip->revision == REV_2) {
 		/*
@@ -2629,7 +2629,7 @@ static int handle_usb_removal(struct smb135x_chg *chip)
 
 static int handle_usb_insertion(struct smb135x_chg *chip)
 {
-	u8 reg;
+	u8 reg = 0;
 	int rc;
 	char *usb_type_name = "null";
 	enum power_supply_type usb_supply_type;
@@ -3046,7 +3046,7 @@ static int show_cnfg_regs(struct seq_file *m, void *data)
 {
 	struct smb135x_chg *chip = m->private;
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 	u8 addr;
 
 	for (addr = 0; addr <= LAST_CNFG_REG; addr++) {
@@ -3079,7 +3079,7 @@ static int show_cmd_regs(struct seq_file *m, void *data)
 {
 	struct smb135x_chg *chip = m->private;
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 	u8 addr;
 
 	for (addr = FIRST_CMD_REG; addr <= LAST_CMD_REG; addr++) {
@@ -3112,7 +3112,7 @@ static int show_status_regs(struct seq_file *m, void *data)
 {
 	struct smb135x_chg *chip = m->private;
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 	u8 addr;
 
 	for (addr = FIRST_STATUS_REG; addr <= LAST_STATUS_REG; addr++) {
@@ -3179,7 +3179,7 @@ static int get_reg(void *data, u64 *val)
 {
 	struct smb135x_chg *chip = data;
 	int rc;
-	u8 temp;
+	u8 temp = 0;
 
 	rc = smb135x_read(chip, chip->peek_poke_address, &temp);
 	if (rc < 0) {
@@ -3196,7 +3196,7 @@ static int set_reg(void *data, u64 val)
 {
 	struct smb135x_chg *chip = data;
 	int rc;
-	u8 temp;
+	u8 temp = 0;
 
 	temp = (u8) val;
 	rc = smb135x_write(chip, chip->peek_poke_address, temp);
@@ -3259,7 +3259,7 @@ DEFINE_SIMPLE_ATTRIBUTE(force_rechg_ops, NULL, force_rechg_set, "0x%02llx\n");
 static void dump_regs(struct smb135x_chg *chip)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 	u8 addr;
 
 	for (addr = 0; addr <= LAST_CNFG_REG; addr++) {
@@ -3301,7 +3301,7 @@ static void dump_regs(struct smb135x_chg *chip)
 static int determine_initial_status(struct smb135x_chg *chip)
 {
 	int rc;
-	u8 reg;
+	u8 reg = 0;
 
 	/*
 	 * It is okay to read the interrupt status here since
