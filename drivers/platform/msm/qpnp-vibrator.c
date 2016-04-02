@@ -97,56 +97,56 @@ static int qpnp_vib_write_u8(struct qpnp_vib *vib, u8 *data, u16 reg)
 }
 
 static ssize_t qpnp_vib_level_show(struct device *dev,
-                                        struct device_attribute *attr,
-                                        char *buf)
+					struct device_attribute *attr,
+					char *buf)
 {
-        struct timed_output_dev *tdev = dev_get_drvdata(dev);
-        struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
-                                         timed_dev);
+	struct timed_output_dev *tdev = dev_get_drvdata(dev);
+	struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
+					 timed_dev);
 
-        return scnprintf(buf, PAGE_SIZE, "%d\n", vib->vtg_level);
+	return scnprintf(buf, PAGE_SIZE, "%d\n", vib->vtg_level);
 }
 
+
 static ssize_t qpnp_vib_level_store(struct device *dev,
-                                        struct device_attribute *attr,
-                                        const char *buf, size_t count)
+					struct device_attribute *attr,
+					const char *buf, size_t count)
 {
-        struct timed_output_dev *tdev = dev_get_drvdata(dev);
-        struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
-                                         timed_dev);
-        int val;
-        int rc;
-		u8 reg = 0;
+	struct timed_output_dev *tdev = dev_get_drvdata(dev);
+	struct qpnp_vib *vib = container_of(tdev, struct qpnp_vib,
+					 timed_dev);
+	int val;
+	int rc;
+	u8 reg = 0;
 
+	rc = kstrtoint(buf, 10, &val);
+	if (rc) {
+		pr_err("%s: error getting level\n", __func__);
+		return -EINVAL;
+	}
 
-        rc = kstrtoint(buf, 10, &val);
-        if (rc) {
-                pr_err("%s: error getting level\n", __func__);
-                return -EINVAL;
-        }
+	if (val < QPNP_VIB_MIN_LEVEL) {
+		pr_err("%s: level %d not in range (%d - %d), using min.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
+		val = QPNP_VIB_MIN_LEVEL;
+	} else if (val > QPNP_VIB_MAX_LEVEL) {
+		pr_err("%s: level %d not in range (%d - %d), using max.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
+		val = QPNP_VIB_MAX_LEVEL;
+	}
 
-        if (val < QPNP_VIB_MIN_LEVEL) {
-                pr_err("%s: level %d not in range (%d - %d), using min.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
-                val = QPNP_VIB_MIN_LEVEL;
-        } else if (val > QPNP_VIB_MAX_LEVEL) {
-                pr_err("%s: level %d not in range (%d - %d), using max.", __func__, val, QPNP_VIB_MIN_LEVEL, QPNP_VIB_MAX_LEVEL);
-                val = QPNP_VIB_MAX_LEVEL;
-        }
+	vib->vtg_level = val;
 
-        vib->vtg_level = val;
+	/* Configure the VTG CTL regiser */
+	rc = qpnp_vib_read_u8(vib, &reg, QPNP_VIB_VTG_CTL(vib->base));
+	if (rc < 0) {
+		pr_info("qpnp: error while reading vibration control register\n");
+		}
+	reg &= ~QPNP_VIB_VTG_SET_MASK;
+	reg |= (vib->vtg_level & QPNP_VIB_VTG_SET_MASK);
+	rc = qpnp_vib_write_u8(vib, &reg, QPNP_VIB_VTG_CTL(vib->base));
+	if (rc)
+		pr_info("qpnp: error while writing vibration control register\n");
 
-        /* Configure the VTG CTL register */
-        rc = qpnp_vib_read_u8(vib, &reg, QPNP_VIB_VTG_CTL(vib->base));
-        if (rc)
-            	pr_info("qpnp: error while reading vibration control register\n");
-        
-        reg &= ~QPNP_VIB_VTG_SET_MASK;
-        reg |= (vib->vtg_level & QPNP_VIB_VTG_SET_MASK);
-        rc = qpnp_vib_write_u8(vib, &reg, QPNP_VIB_VTG_CTL(vib->base));        
-        if (rc)
-            	pr_info("qpnp: error while writing vibration control register\n");
-
-        return strnlen(buf, count);
+	return strnlen(buf, count);
 }
 static DEVICE_ATTR(vtg_level, S_IRUGO | S_IWUSR, qpnp_vib_level_show, qpnp_vib_level_store);
 
